@@ -28,3 +28,6 @@ new.lib:
 
 start.dev:
 	go run ./${APP_DIR}/${name}
+
+release:
+	go build -o main ./${APP_DIR}/${name}
