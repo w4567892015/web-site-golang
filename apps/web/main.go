@@ -1,6 +1,9 @@
 package main
 
 import (
+	"context"
+	"fmt"
+	"libs/otel"
 	"log"
 	"os"
 
@@ -8,8 +11,6 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 
 	"apps/web/middlewares"
-	logger "libs/otel"
-
 	"apps/web/modules/index"
 	"apps/web/modules/root"
 )
@@ -26,10 +27,15 @@ func run(server *gin.Engine) {
 }
 
 func main() {
-
-	logger.Log("web", "Application started.")
+	ctx := context.Background()
+	telem, err := otel.NewTelemetry(ctx)
+	if err != nil {
+		fmt.Println("failed to create telemetry, falling back to no-op telemetry")
+	}
+	defer telem.Shutdown(ctx)
 
 	server := gin.Default()
+	server.Use(otel.Middlewares())
 	server.Use(middlewares.CORSMiddleware())
 
 	// Register module routes
