@@ -7,6 +7,7 @@ WORKDIR /usr/src/
 COPY go.work go.work.sum ./
 COPY ./apps/${appName} ./apps/${appName}
 COPY ./libs ./libs
+RUN sed -i "/^\t\.\/apps\// { /${appName}/!d }" go.work
 
 FROM base AS builder
 RUN go mod download
